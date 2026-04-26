@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Online Complaint Management System</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg glass-nav mb-5 position-sticky top-0" style="z-index: 1030;">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center" href="{{ url_for('index') }}">
+      <i class="fa-solid fa-layer-group me-2" style="font-size: 1.4rem;"></i>
+      OCMS
+    </a>
+    <button class="navbar-toggler border-0 focus-ring" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto align-items-center">
+        {% if session.get('user_id') %}
+          <li class="nav-item">
+            <span class="navbar-text me-4 fw-bold">
+              <i class="fa-regular fa-user-circle me-2 text-primary"></i>{{ session.get('user_name') }}
+            </span>
+          </li>
+          <li class="nav-item mt-2 mt-lg-0">
+            <a class="btn btn-custom-outline px-4" href="{{ url_for('logout') }}">Logout</a>
+          </li>
+        {% else %}
+          <li class="nav-item">
+            <a class="nav-link px-3" href="{{ url_for('student_login') }}">Student</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link px-3" href="{{ url_for('admin_login') }}">Admin</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link px-3" href="{{ url_for('department_login') }}">Department</a>
+          </li>
+          <li class="nav-item ms-lg-3 mt-3 mt-lg-0">
+            <a class="btn btn-custom w-100" href="{{ url_for('register') }}">Register</a>
+          </li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="container fade-in mb-5">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="row justify-content-center mb-4">
+        <div class="col-md-6 col-lg-5">
+          {% for category, message in messages %}
+          {% set alert_cat = category %}
+          {% if category == 'danger' %} {% set alert_cat = 'danger' %} {% endif %}
+          <div class="alert alert-{{ alert_cat }} alert-dismissible fade show shadow-sm border-0 d-flex align-items-center glass-card py-3 px-4" role="alert" style="border-radius: 12px; padding: 1rem 1.25rem !important;">
+            {% if category == 'success' %}
+              <i class="fa-solid fa-check-circle fs-4 me-3 text-success"></i>
+            {% elif category == 'danger' %}
+              <i class="fa-solid fa-triangle-exclamation fs-4 me-3 text-danger"></i>
+            {% elif category == 'warning' %}
+              <i class="fa-solid fa-circle-exclamation fs-4 me-3 text-warning"></i>
+            {% else %}
+              <i class="fa-solid fa-circle-info fs-4 me-3 text-info"></i>
+            {% endif %}
+            <div class="fw-medium text-dark">{{ message }}</div>
+            <button type="button" class="btn-close mb-auto mt-1" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  {% block content %}{% endblock %}
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

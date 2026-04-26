@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-9">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2 class="fw-bold mb-0">
+        <i class="fa-solid fa-file-contract me-2 text-primary"></i>Complaint #{{ complaint.id }}
+      </h2>
+      <a href="javascript:history.back()" class="btn btn-sm btn-custom-outline"><i class="fa-solid fa-arrow-left me-2"></i>Back</a>
+    </div>
+
+    <div class="glass-card mb-4 border-0" style="border-top: 4px solid var(--primary-color) !important;">
+      <div class="d-flex justify-content-between align-items-start mb-3">
+        <h4 class="fw-bold mb-0 text-dark">{{ complaint.title }}</h4>
+        <span class="badge bg-light text-dark border px-3 py-2"><i class="fa-solid fa-tag me-2 text-muted"></i>{{ complaint.category }}</span>
+      </div>
+      
+      <div class="row mb-4">
+        <div class="col-md-6 mb-2 mb-md-0">
+          <p class="mb-1 text-muted small text-uppercase fw-bold">Current Status</p>
+          {% if complaint.status == 'Pending' %}
+            <span class="badge badge-custom badge-pending fs-6"><i class="fa-regular fa-clock me-2"></i>Pending</span>
+          {% elif complaint.status == 'In Progress' %}
+            <span class="badge badge-custom badge-info fs-6"><i class="fa-solid fa-arrows-rotate me-2"></i>In Progress</span>
+          {% elif complaint.status == 'Resolved' %}
+            <span class="badge badge-custom badge-resolved fs-6"><i class="fa-solid fa-check me-2"></i>Resolved</span>
+          {% elif complaint.status == 'Rejected' %}
+            <span class="badge badge-custom badge-rejected fs-6"><i class="fa-solid fa-xmark me-2"></i>Rejected</span>
+          {% else %}
+            <span class="badge badge-custom bg-secondary fs-6">{{ complaint.status }}</span>
+          {% endif %}
+        </div>
+        <div class="col-md-6">
+          <p class="mb-1 text-muted small text-uppercase fw-bold">Reported By</p>
+          <div class="d-flex align-items-center">
+            <i class="fa-regular fa-user-circle text-primary me-2"></i>
+            <span class="fw-medium">{{ complaint.user.name }}</span>
+            <span class="text-muted ms-2 small">({{ complaint.created_at.strftime('%b %d, %Y at %I:%M %p') }})</span>
+          </div>
+        </div>
+      </div>
+
+      {% if complaint.location %}
+      <div class="p-3 bg-light rounded-3 mb-4 d-flex align-items-center">
+        <i class="fa-solid fa-location-dot text-danger fs-4 me-3"></i>
+        <div>
+          <div class="small text-muted fw-bold text-uppercase">Location</div>
+          <div class="fw-medium">{{ complaint.location }}</div>
+        </div>
+      </div>
+      {% endif %}
+
+      <div class="mb-4">
+        <p class="mb-2 text-muted small text-uppercase fw-bold">Description</p>
+        <div class="p-4 bg-white rounded-3 border">
+          <p class="mb-0 text-dark" style="white-space: pre-wrap;">{{ complaint.description }}</p>
+        </div>
+      </div>
+
+      {% if complaint.admin_remarks %}
+      <div class="mt-4 p-4 rounded-3" style="background-color: rgba(99, 102, 241, 0.05); border: 1px solid rgba(99, 102, 241, 0.2);">
+        <h6 class="fw-bold text-primary mb-2"><i class="fa-solid fa-user-shield me-2"></i>Admin Remarks</h6>
+        <p class="mb-0 text-dark">{{ complaint.admin_remarks }}</p>
+      </div>
+      {% endif %}
+    </div>
+
+    {% if session.get('role') == 'admin' %}
+    
+    <div class="row">
+      <div class="col-md-5 mb-4 mb-md-0">
+        <div class="glass-card h-100" style="border-top: 4px solid #06b6d4;">
+          <h5 class="fw-bold mb-4"><i class="fa-solid fa-building me-2 text-info"></i>Department Status</h5>
+          <div class="mb-3">
+            <div class="small text-muted fw-bold text-uppercase mb-1">Assigned Department</div>
+            <div class="fw-medium">
+              {% if complaint.department %}
+                <span class="badge bg-info text-white fs-6 px-3 py-2"><i class="fa-solid fa-building-user me-2"></i>{{ complaint.department.name }}</span>
+              {% else %}
+                <span class="text-muted fst-italic">None Assigned</span>
+              {% endif %}
+            </div>
+          </div>
+          <div class="mb-3">
+            <div class="small text-muted fw-bold text-uppercase mb-1">Department Progress</div>
+            <div class="fw-medium">{{ complaint.department_status }}</div>
+          </div>
+          <div>
+            <div class="small text-muted fw-bold text-uppercase mb-1">Department Remarks</div>
+            <div class="p-3 bg-light rounded text-muted small fst-italic">
+              {{ complaint.department_remarks or 'No remarks provided yet.' }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-7">
+        <div class="glass-card h-100" style="border-top: 4px solid #ef4444;">
+          <h5 class="fw-bold mb-4"><i class="fa-solid fa-gear me-2 text-danger"></i>Manage Complaint</h5>
+          <form method="post" action="{{ url_for('admin_update_complaint', complaint_id=complaint.id) }}">
+            <div class="mb-3">
+              <label for="assigned_department_id" class="form-label fw-medium">Assign Department</label>
+              <select class="form-select bg-light" id="assigned_department_id" name="assigned_department_id">
+                <option value="">-- Unassigned --</option>
+                {% for dept in departments %}
+                <option value="{{ dept.id }}" {% if complaint.assigned_department_id == dept.id %}selected{% endif %}>{{ dept.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="status" class="form-label fw-medium">Official Status <span class="text-primary small">(Visible to Student)</span></label>
+              <select class="form-select bg-light" id="status" name="status">
+                <option value="Pending" {% if complaint.status == 'Pending' %}selected{% endif %}>Pending</option>
+                <option value="In Progress" {% if complaint.status == 'In Progress' %}selected{% endif %}>In Progress</option>
+                <option value="Resolved" {% if complaint.status == 'Resolved' %}selected{% endif %}>Resolved</option>
+                <option value="Rejected" {% if complaint.status == 'Rejected' %}selected{% endif %}>Rejected</option>
+              </select>
+            </div>
+            <div class="mb-4">
+              <label for="admin_remarks" class="form-label fw-medium">Admin Remarks <span class="text-primary small">(Visible to Student)</span></label>
+              <textarea class="form-control bg-light" id="admin_remarks" name="admin_remarks" rows="4" placeholder="Feedback or resolution details...">{{ complaint.admin_remarks or '' }}</textarea>
+            </div>
+            <div class="text-end">
+              <button type="submit" class="btn btn-danger-custom px-4"><i class="fa-solid fa-floppy-disk me-2"></i>Save Changes</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+  </div>
+</div>
+{% endblock %}

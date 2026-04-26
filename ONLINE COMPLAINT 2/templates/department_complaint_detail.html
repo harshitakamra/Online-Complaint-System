@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-9">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2 class="fw-bold mb-0">
+        <i class="fa-solid fa-file-contract me-2 text-success"></i>Assigned Task #{{ complaint.id }}
+      </h2>
+      <a href="{{ url_for('department_dashboard') }}" class="btn btn-sm btn-custom-outline"><i class="fa-solid fa-arrow-left me-2"></i>Back to Dashboard</a>
+    </div>
+
+    <div class="glass-card mb-4 border-0" style="border-top: 4px solid #22c55e !important;">
+      <div class="d-flex justify-content-between align-items-start mb-3">
+        <h4 class="fw-bold mb-0 text-dark">{{ complaint.title }}</h4>
+        <span class="badge bg-light text-dark border px-3 py-2"><i class="fa-solid fa-tag me-2 text-muted"></i>{{ complaint.category }}</span>
+      </div>
+
+      <div class="row mb-4">
+        <div class="col-md-12">
+          <p class="mb-1 text-muted small text-uppercase fw-bold">Reported Date</p>
+          <div class="fw-medium text-dark">
+            <i class="fa-regular fa-calendar text-success me-2"></i>{{ complaint.created_at.strftime('%b %d, %Y at %I:%M %p') }}
+          </div>
+        </div>
+      </div>
+
+      {% if complaint.location %}
+      <div class="p-3 bg-light rounded-3 mb-4 d-flex align-items-center border-start border-4 border-warning">
+        <i class="fa-solid fa-location-dot text-warning fs-4 me-3 ms-2"></i>
+        <div>
+          <div class="small text-muted fw-bold text-uppercase">Location</div>
+          <div class="fw-medium">{{ complaint.location }}</div>
+        </div>
+      </div>
+      {% endif %}
+
+      <div class="mb-4">
+        <p class="mb-2 text-muted small text-uppercase fw-bold">Task Description</p>
+        <div class="p-4 bg-white rounded-3 border shadow-sm">
+          <p class="mb-0 text-dark" style="white-space: pre-wrap;">{{ complaint.description }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="glass-card border-0 shadow-lg" style="background: rgba(255, 255, 255, 0.9);">
+      <h5 class="fw-bold mb-4"><i class="fa-solid fa-pen-to-square me-2 text-success"></i>Update Task Status</h5>
+      <form method="post" action="{{ url_for('department_update_complaint', complaint_id=complaint.id) }}">
+        <div class="row">
+          <div class="col-md-4 mb-4 mb-md-0">
+            <label for="department_status" class="form-label fw-medium">Department Status</label>
+            <select class="form-select bg-light" id="department_status" name="department_status">
+              <option value="Pending" {% if complaint.department_status == 'Pending' %}selected{% endif %}>Pending</option>
+              <option value="In Progress" {% if complaint.department_status == 'In Progress' %}selected{% endif %}>In Progress</option>
+              <option value="Resolved" {% if complaint.department_status == 'Resolved' %}selected{% endif %}>Resolved</option>
+            </select>
+          </div>
+          <div class="col-md-8 mb-4">
+            <label for="department_remarks" class="form-label fw-medium">Department Remarks <span class="text-success small">(Visible to Admin)</span></label>
+            <textarea class="form-control bg-light" id="department_remarks" name="department_remarks" rows="4" placeholder="Detail any findings or actions taken...">{{ complaint.department_remarks or '' }}</textarea>
+          </div>
+        </div>
+        <div class="text-end">
+          <button type="submit" class="btn btn-success-custom px-4"><i class="fa-solid fa-check me-2"></i>Save Department Update</button>
+        </div>
+      </form>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="glass-card mb-4" style="border-top: 4px solid #22c55e;">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 pb-3 border-bottom border-light">
+    <h2 class="fw-bold mb-3 mb-md-0 d-flex align-items-center">
+      <i class="fa-solid fa-building-user me-3 text-success fs-3"></i> {{ session.get('user_name') }} Dashboard
+    </h2>
+    <form class="d-flex align-items-center" method="get">
+      <div class="input-group shadow-sm">
+        <span class="input-group-text bg-white border-end-0"><i class="fa-solid fa-filter text-muted"></i></span>
+        <select name="status" class="form-select border-start-0 ps-0" onchange="this.form.submit()">
+          <option value="">All Statuses</option>
+          <option value="Pending" {% if request.args.get('status') == 'Pending' %}selected{% endif %}>Pending</option>
+          <option value="In Progress" {% if request.args.get('status') == 'In Progress' %}selected{% endif %}>In Progress</option>
+          <option value="Resolved" {% if request.args.get('status') == 'Resolved' %}selected{% endif %}>Resolved</option>
+          <option value="Rejected" {% if request.args.get('status') == 'Rejected' %}selected{% endif %}>Rejected</option>
+        </select>
+      </div>
+    </form>
+  </div>
+
+  {% if complaints %}
+  <div class="table-responsive">
+    <table class="table table-glass text-nowrap">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Title & Category</th>
+          <th>Dept Status</th>
+          <th>Created At</th>
+          <th class="text-center">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for complaint in complaints %}
+        <tr>
+          <td class="fw-bold text-muted">#{{ complaint.id }}</td>
+          <td>
+            <div class="fw-medium text-dark mb-1">{{ complaint.title }}</div>
+            <span class="badge bg-light text-dark border py-1"><i class="fa-solid fa-tag me-1 text-muted"></i>{{ complaint.category }}</span>
+          </td>
+          <td>
+            {% if complaint.department_status == 'Pending' %}
+              <span class="badge badge-custom badge-pending">Pending</span>
+            {% elif complaint.department_status == 'In Progress' %}
+              <span class="badge badge-custom badge-info">In Progress</span>
+            {% elif complaint.department_status == 'Resolved' %}
+              <span class="badge badge-custom badge-resolved">Resolved</span>
+            {% else %}
+              <span class="badge badge-custom bg-secondary">{{ complaint.department_status }}</span>
+            {% endif %}
+          </td>
+          <td class="text-muted small"><i class="fa-regular fa-calendar me-1"></i>{{ complaint.created_at.strftime('%b %d, %Y') }}</td>
+          <td class="text-center">
+            <a href="{{ url_for('department_view_complaint', complaint_id=complaint.id) }}" class="btn btn-sm btn-custom-outline px-3">Review</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="text-center py-5">
+    <div class="display-1 text-muted opacity-25 mb-3"><i class="fa-solid fa-inbox"></i></div>
+    <h4 class="text-muted fw-normal">No complaints assigned to your department yet.</h4>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row justify-content-center align-items-center min-vh-75">
+  <div class="col-md-6 col-lg-5 col-xl-5">
+    <div class="glass-card text-center text-md-start">
+      <div class="text-center mb-4">
+        <div class="display-5 mb-3" style="color: var(--primary-color);">
+          <i class="fa-solid fa-user-plus"></i>
+        </div>
+        <h2 class="fw-bold fs-3 text-dark">Create Account</h2>
+        <p class="text-muted small">Join OCMS to report and track complaints.</p>
+      </div>
+      <form method="post">
+        <div class="mb-3">
+          <label for="name" class="form-label ms-1">Full Name</label>
+          <div class="input-group">
+            <span class="input-group-text bg-white border-end-0"><i class="fa-regular fa-user text-muted"></i></span>
+            <input type="text" class="form-control border-start-0 ps-0" id="name" name="name" placeholder="John Doe" required>
+          </div>
+        </div>
+        <div class="mb-3">
+          <label for="email" class="form-label ms-1">Email Address</label>
+          <div class="input-group">
+            <span class="input-group-text bg-white border-end-0"><i class="fa-regular fa-envelope text-muted"></i></span>
+            <input type="email" class="form-control border-start-0 ps-0" id="email" name="email" placeholder="student@example.com" required>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="password" class="form-label ms-1">Password</label>
+            <div class="input-group">
+              <span class="input-group-text bg-white border-end-0"><i class="fa-solid fa-lock text-muted"></i></span>
+              <input type="password" class="form-control border-start-0 ps-0" id="password" name="password" placeholder="••••••••" required>
+            </div>
+          </div>
+          <div class="col-md-6 mb-4">
+            <label for="confirm_password" class="form-label ms-1">Confirm Password</label>
+            <div class="input-group">
+              <span class="input-group-text bg-white border-end-0"><i class="fa-solid fa-lock text-muted"></i></span>
+              <input type="password" class="form-control border-start-0 ps-0" id="confirm_password" name="confirm_password" placeholder="••••••••" required>
+            </div>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-custom w-100 mb-3 py-2 fs-6">Register</button>
+      </form>
+      <div class="text-center mt-3">
+        <p class="text-muted mb-0 small">
+          Already have an account? <a href="{{ url_for('student_login') }}" class="text-decoration-none fw-bold" style="color: var(--primary-color);">Sign in</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

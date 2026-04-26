@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="glass-card mb-4">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 pb-3 border-bottom border-light">
+    <h2 class="fw-bold mb-3 mb-md-0"><i class="fa-solid fa-clipboard-list me-2 text-primary"></i>My Complaints</h2>
+    <a href="{{ url_for('submit_complaint') }}" class="btn btn-custom shadow-sm">
+      <i class="fa-solid fa-plus me-2"></i>Submit New Complaint
+    </a>
+  </div>
+
+  {% if complaints %}
+  <div class="table-responsive">
+    <table class="table table-glass text-nowrap">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Title</th>
+          <th>Category</th>
+          <th>Status</th>
+          <th>Created At</th>
+          <th class="text-center">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for complaint in complaints %}
+        <tr>
+          <td class="fw-bold text-muted">#{{ complaint.id }}</td>
+          <td class="fw-medium text-dark">{{ complaint.title }}</td>
+          <td><span class="badge bg-light text-dark border"><i class="fa-solid fa-tag me-1 text-muted"></i>{{ complaint.category }}</span></td>
+          <td>
+            {% if complaint.status == 'Pending' %}
+              <span class="badge badge-custom badge-pending"><i class="fa-regular fa-clock me-1"></i>Pending</span>
+            {% elif complaint.status == 'In Progress' %}
+              <span class="badge badge-custom badge-info"><i class="fa-solid fa-arrows-rotate me-1"></i>In Progress</span>
+            {% elif complaint.status == 'Resolved' %}
+              <span class="badge badge-custom badge-resolved"><i class="fa-solid fa-check me-1"></i>Resolved</span>
+            {% elif complaint.status == 'Rejected' %}
+              <span class="badge badge-custom badge-rejected"><i class="fa-solid fa-xmark me-1"></i>Rejected</span>
+            {% else %}
+              <span class="badge badge-custom bg-secondary">{{ complaint.status }}</span>
+            {% endif %}
+          </td>
+          <td class="text-muted small"><i class="fa-regular fa-calendar me-1"></i>{{ complaint.created_at.strftime('%b %d, %Y') }}</td>
+          <td class="text-center">
+            <a href="{{ url_for('view_complaint', complaint_id=complaint.id) }}" class="btn btn-sm btn-custom-outline px-3">Details</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="text-center py-5">
+    <div class="display-1 text-muted opacity-25 mb-3"><i class="fa-regular fa-folder-open"></i></div>
+    <h4 class="text-muted fw-normal">You haven't submitted any complaints yet.</h4>
+    <p class="text-muted small">Click the "Submit New Complaint" button to get started.</p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
